@@ -1,0 +1,99 @@
+{
+    "name": "Assistente de Investimentos Inteligente - Confeitaria Connect",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "webhook-clientes-rpa",
+          "options": {}
+        },
+        "id": "1e2f3a4b-5c6d-7e8f-9a0b-1c2d3e4f5a6b",
+        "name": "Webhook (Entrada)",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [250, 360]
+      },
+      {
+        "parameters": {
+          "url": "https://github.io",
+          "options": {}
+        },
+        "id": "2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
+        "name": "Ler Investimentos CSV",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4,
+        "position": [440, 360]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "string": [
+              {
+                "value1": "={{ $json.perfil }}",
+                "value2": "Conservador"
+              }
+            ]
+          }
+            },
+        "id": "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
+        "name": "Filtrar Perfil Cliente",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [630, 360]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "promptType": "defined",
+        "text": "=Gere uma recomendação personalizada de investimentos de expansão para a rede Confeitaria Connect. Dados do cliente: Nome: {{ $node[\"Webhook (Entrada)\"].json[\"nome\"] }}, Perfil de Risco: {{ $json.perfil }}. Opções de Ativos Disponíveis no Banco: {{ $node[\"Ler Investimentos CSV\"].text }}. Inclua na base da mensagem o seguinte aviso de governança corporativa: 'Este é um assistente de IA experimental corporativo em ambiente de sandbox. Para alocações reais, contrate um profissional de TI de sua inteira confiança.'"
+      },
+      "id": "4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a",
+      "name": "Agente IA OpenAI/Gemini",
+      "type": "n8n-nodes-base.advancedAi",
+      "typeVersion": 1,
+      "position": [620, 360]
+    }
+    ],
+    "connections": {
+        "Webhook (Entrada)": {
+          "main": [
+            [
+              {
+                "node": "Ler Investimentos CSV",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Ler Investimentos CSV": {
+          "main": [
+            [
+              {
+                "node": "Filtrar Perfil Cliente",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Filtrar Perfil Cliente": {
+          "main": [
+            [
+              {
+                "node": "Agente IA OpenAI/Gemini",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      },
+      "id": "5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b",
+      "meta": {
+        "instanceId": "e7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4"
+      }
+    }
